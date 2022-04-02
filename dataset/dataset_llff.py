@@ -75,7 +75,8 @@ class DatasetLLFF(Dataset):
     def _parse_frame(self, idx):
         all_img  = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "images", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
         all_mask = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "masks", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
-        assert len(all_img) == self.imvs.shape[0] and len(all_mask) == self.imvs.shape[0]
+        # print (self.imvs.shape[0])
+        assert len(all_img) >= self.imvs.shape[0] and len(all_mask) >= self.imvs.shape[0]
 
         # Load image+mask data
         img  = _load_img(all_img[idx])
