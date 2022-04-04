@@ -43,7 +43,12 @@ class DatasetLLFF(Dataset):
         self.examples = examples
 
         # Enumerate all image files and get resolution
-        all_img = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "images", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
+        if os.path.exists(os.path.join(base_dir, "view_imgs.txt")):
+            all_img = []
+            for img in open(os.path.join(base_dir, "view_imgs.txt"), "r"):
+                all_img.append(os.path.join (base_dir, "images", img.strip()))
+        else:
+            all_img = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "images", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
         self.resolution = _load_img(all_img[0]).shape[0:2]
 
         # Load camera poses
@@ -73,10 +78,19 @@ class DatasetLLFF(Dataset):
                 self.preloaded_data += [self._parse_frame(i)]
 
     def _parse_frame(self, idx):
-        all_img  = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "images", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
-        all_mask = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "masks", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
-        # print (self.imvs.shape[0])
-        assert len(all_img) >= self.imvs.shape[0] and len(all_mask) >= self.imvs.shape[0]
+        if os.path.exists(os.path.join(self.base_dir, "view_imgs.txt")):
+            all_img = []
+            for img in open(os.path.join(self.base_dir, "view_imgs.txt"), "r"):
+                all_img.append(os.path.join (self.base_dir, "images", img.strip()))
+        else:
+            all_img = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "images", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
+        if os.path.exists(os.path.join(self.base_dir, "view_imgs.txt")):
+            all_mask = []
+            for img in open(os.path.join(self.base_dir, "view_imgs.txt"), "r"):
+                all_mask.append(os.path.join (self.base_dir, "masks", img.strip()))
+        else:
+            all_mask = [f for f in sorted(glob.glob(os.path.join(self.base_dir, "masks", "*"))) if f.lower().endswith('png') or f.lower().endswith('jpg') or f.lower().endswith('jpeg')]
+        assert len(all_img) == self.imvs.shape[0] and len(all_mask) == self.imvs.shape[0]
 
         # Load image+mask data
         img  = _load_img(all_img[idx])
