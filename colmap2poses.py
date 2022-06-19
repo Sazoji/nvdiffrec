@@ -127,7 +127,7 @@ def run_colmap(basedir, match_type, colmap_path="Colmap"):
         os.makedirs(p)
     
     mapper_args = [
-        'COLMAP.bat', 'mapper',
+        colmap_path, 'mapper',
             '--database_path', os.path.join(basedir, args.database_db),
             '--image_path', os.path.join(basedir, args.images),
             '--output_path', os.path.join(basedir, 'sparse'), # --export_path changed to --output_path in colmap 3.6
@@ -810,11 +810,15 @@ if __name__=='__main__':
                 print(f"{img} done")
                 
     if args.colmap_path != '':
-        print("using colmap path:", args.colmap_path)
+        if os.name == 'nt' and "COLMAP.bat" not in args.colmap_path:
+            sys.exit("colmap path fail")
+        elif os.path.exists(args.colmap_path):
+            print ('valid custom colmap path!')
+            colmap_path = os.path.normpath(args.colmap_path)
+            print("using colmap path:", colmap_path)
+        else: sys.exit("colmap path fail")
     elif os.name == 'nt':
-        colmap_path = 'COLMAP.bat'
-    
+        colmap_path = "colmap.bat"
     gen_poses(args.scenedir, args.match_type, colmap_path)
     if args.json == 1:
         convert_to_json(args)
-    
