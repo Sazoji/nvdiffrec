@@ -811,12 +811,12 @@ if __name__=='__main__':
                 
     if args.colmap_path != '':
         if os.name == 'nt' and "COLMAP.bat" not in args.colmap_path:
-            sys.exit("colmap path fail")
+            sys.exit("custom colmap path fail, please include a valid path, including \"COLMAP.bat\" in windows")
         elif os.path.exists(args.colmap_path):
             print ('valid custom colmap path!')
             colmap_path = os.path.normpath(args.colmap_path)
             print("using colmap path:", colmap_path)
-        else: sys.exit("colmap path fail")
+        else: sys.exit("colmap path fail, make sure your path is accessable")
     elif os.name == 'nt':
         colmap_path = "colmap.bat"
     gen_poses(args.scenedir, args.match_type, colmap_path)
